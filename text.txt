@@ -1,0 +1,87 @@
+INSERT INTO funnel (
+    "nmID", date, owner, "vendorCode", "productType", "brandName", "openCardCount", "addToCartCount",
+    "ordersCount", "ordersSumRub", "buyoutsCount", "buyoutsSumRub", "cancelCount", "cancelSumRub",
+    "avgPriceRub", "avgOrdersCountPerDay", "addToCartPercent", "cartToOrderPercent", "buyoutsPercent",
+    "stocksMp", "stocksWb"
+) VALUES (
+    17955783, '2024-07-29', 'owner1', 'vendorCode1', 'productType1', 'brandName1', 100, 50,
+    20, 2000, 10, 1000, 5, 500,
+    150, 2, 50, 40, 30,
+    100, 200
+);
+
+=================
+
+from sqlalchemy import create_engine, Column, Integer, String, Float, Date, ForeignKey, UniqueConstraint
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
+from dotenv import load_dotenv
+from sqlalchemy.orm import sessionmaker
+import os
+Base = declarative_base()
+
+load_dotenv()
+
+DATABASE_URL = os.getenv('DATABASE_URL')
+
+class FunnelData(Base):
+    __tablename__ = 'funnel'
+
+    nmID = Column(Integer, primary_key=True)
+    date = Column(Date, nullable=False)
+    owner = Column(String)
+    vendorCode = Column(String)
+    productType = Column(String)
+    brandName = Column(String)
+    openCardCount = Column(Integer)
+    addToCartCount = Column(Integer)
+    ordersCount = Column(Integer)
+    ordersSumRub = Column(Integer)
+    buyoutsCount = Column(Integer)
+    buyoutsSumRub = Column(Integer)
+    cancelCount = Column(Integer)
+    cancelSumRub = Column(Integer)
+    avgPriceRub = Column(Integer)
+    avgOrdersCountPerDay = Column(Integer)
+    addToCartPercent = Column(Integer)
+    cartToOrderPercent = Column(Integer)
+    buyoutsPercent = Column(Integer)
+    stocksMp = Column(Integer)
+    stocksWb = Column(Integer)
+
+    __table_args__ = (UniqueConstraint('nmID', 'date', name='unique_nmid_date'),)
+
+
+class AdsData(Base):
+    __tablename__ = 'ads'
+
+    adID = Column(Integer, primary_key=True)
+    nmID = Column(Integer, ForeignKey('funnel.nmID'), nullable=False)
+    date = Column(Date, nullable=False)
+    productName = Column(String)
+    status = Column(Integer)
+    views = Column(Integer)
+    clicks = Column(Integer)
+    ctr = Column(Float)
+    cpc = Column(Float)
+    sum = Column(Float)
+    atbs = Column(Integer)
+    orders = Column(Integer)
+    cr = Column(Integer)
+    shks = Column(Integer)
+    sum_price = Column(Float)
+
+    # Relationship to FunnelData
+    funnel = relationship("FunnelData", backref="ads")
+
+    __table_args__ = (UniqueConstraint('nmID', 'adID', 'date', name='unique_nmid_adid_date'),)
+
+def setup_db():
+    engine = create_engine(DATABASE_URL)
+    Session = sessionmaker(bind=engine)
+    return engine, Session
+
+
+
+'selectedPeriod': {'begin': '2024-08-01 00:00:00', 'end': '2024-08-01 21:57:44'
+'selectedPeriod': {'begin': '2024-07-31 00:00:00', 'end': '2024-08-01 00:00:00'
